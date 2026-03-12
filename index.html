@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Детская областная больница — Тест</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;--bg4:rgba(30,41,59,0.8);
+    --text:#f8fafc;--text2:#e2e8f0;--text3:#94a3b8;--text4:#64748b;
+    --blue:#3b82f6;--blue2:#2563eb;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;
+    --font-h:'Merriweather',Georgia,serif;--font-b:'Source Sans Pro',-apple-system,sans-serif;
+    --r:14px;
+  }
+  body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+  .screen{display:none;min-height:100vh;min-height:100dvh}
+  .screen.active{display:flex}
+  .center-screen{flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%)}
+  .btn{padding:16px 24px;border-radius:var(--r);border:none;font-size:16px;font-weight:600;cursor:pointer;font-family:var(--font-h);transition:transform .15s,box-shadow .15s;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn:active{transform:scale(.97)}
+  .btn-p{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.35)}
+  .btn-p:hover{box-shadow:0 6px 24px rgba(59,130,246,.5);transform:translateY(-1px)}
+  .btn-s{background:rgba(30,41,59,.6);color:var(--text3);border:2px solid var(--bg3)}
+  .btn-s:hover{border-color:var(--blue);color:var(--text2)}
+  .btn-g{background:var(--green);color:#fff}
+  .btn-y{background:var(--yellow);color:#fff}
+  .btn-r{background:rgba(127,29,29,.2);color:#fca5a5;border:1px solid #7f1d1d}
+  .btn-sm{padding:10px 16px;font-size:14px;font-family:var(--font-b)}
+  .btn-dis{background:var(--bg2)!important;color:var(--text4)!important;cursor:default!important;box-shadow:none!important}
+  .card{background:var(--bg4);border-radius:20px;padding:32px;max-width:420px;width:100%;backdrop-filter:blur(16px);border:1px solid var(--bg3)}
+  .card h2{font-family:var(--font-h);font-size:22px;text-align:center;margin-bottom:4px}
+  .card .hint{color:var(--text4);font-size:14px;text-align:center;margin-bottom:22px}
+  .inp{width:100%;padding:13px 14px;border-radius:12px;border:2px solid var(--bg3);background:var(--bg);color:var(--text);font-size:16px;outline:none;font-family:var(--font-b);transition:border-color .2s}
+  .inp:focus{border-color:var(--blue)}
+  .inp-pin{text-align:center;letter-spacing:8px;font-family:monospace;font-size:20px}
+  .inp-sm{font-size:14px;padding:10px 12px;border-radius:10px}
+  textarea.inp{resize:vertical;min-height:60px;line-height:1.5}
+  .btn-row{display:flex;gap:10px;margin-top:18px}
+  .btn-row .btn{flex:1}
+  .btn-row .btn.w2{flex:2}
+  .err{color:var(--red);font-size:13px;text-align:center;margin-top:8px}
+  #home h1{font-family:var(--font-h);font-size:28px;text-align:center;letter-spacing:-.5px;margin-bottom:4px}
+  #home .sub{color:var(--text3);font-size:15px;margin-bottom:40px}
+  .home-btns{display:flex;flex-direction:column;gap:14px;width:100%;max-width:320px}
+  #admin{flex-direction:column;padding:16px 20px}
+  .adm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+  .adm-head h1{font-family:var(--font-h);font-size:19px}
+  .adm-info{font-size:14px;color:var(--text3);display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:9px 16px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .2s}
+  .tab.on{background:var(--blue);color:#fff}
+  .tab:not(.on){background:rgba(51,65,85,.5);color:var(--text3)}
+  .tab-c{display:none}.tab-c.on{display:block}
+  .qr-sec{display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:8px}
+  .qr-card{background:rgba(30,41,59,.6);border-radius:20px;padding:24px;border:1px solid var(--bg3);text-align:center;max-width:480px;width:100%}
+  .qr-card h2{font-family:var(--font-h);font-size:19px;margin-bottom:4px}
+  .qr-box{width:260px;height:260px;border-radius:14px;margin:14px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.1);border:3px solid #e2e8f0}
+  .qr-box img{width:240px;height:240px}
+  .scards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:480px;width:100%}
+  .sc{background:rgba(30,41,59,.6);border-radius:var(--r);padding:14px 8px;text-align:center;border:1px solid var(--bg3)}
+  .sc .i{font-size:20px;margin-bottom:2px}
+  .sc .v{font-size:19px;font-weight:700;font-family:monospace}
+  .sc .l{font-size:11px;color:var(--text4);margin-top:2px}
+  .res-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+  .res-head span{color:var(--text3);font-size:14px}
+  .empty{text-align:center;padding:40px 20px;color:var(--text4);background:rgba(30,41,59,.4);border-radius:16px}
+  .empty .i{font-size:44px;margin-bottom:8px}
+  .twrap{background:rgba(30,41,59,.4);border-radius:16px;border:1px solid var(--bg3);overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:400px}
+  th{padding:11px 8px;font-size:11px;font-weight:600;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:.5px;background:rgba(51,65,85,.5)}
+  td{padding:11px 8px;font-size:14px;color:var(--text2);text-align:center}
+  th.l,td.l{text-align:left}
+  tr+tr{border-top:1px solid rgba(51,65,85,.4)}
+  .bar-w{width:48px;height:6px;border-radius:3px;background:rgba(51,65,85,.5);display:inline-block;overflow:hidden;vertical-align:middle;margin-right:5px}
+  .bar-f{height:100%;border-radius:3px;transition:width .5s}
+  .set-card{background:rgba(30,41,59,.6);border-radius:var(--r);padding:20px;border:1px solid var(--bg3);max-width:480px;margin-bottom:16px}
+  .set-card h3{font-family:var(--font-h);font-size:16px;margin-bottom:14px;color:var(--text2)}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .set-row label{font-size:14px;color:var(--text3);flex:1}
+  .cnt-btns{display:flex;align-items:center;gap:8px}
+  .cnt-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--bg3);background:var(--bg2);color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-weight:700}
+  .cnt-btn:hover{border-color:var(--blue);color:var(--blue)}
+  .cnt-val{font-size:22px;font-weight:700;font-family:monospace;color:var(--text);min-width:36px;text-align:center}
+  .set-save-msg{font-size:13px;color:var(--green);margin-top:10px;display:none}
+  #quiz{flex-direction:column}
+  .pbar{height:4px;background:var(--bg2)}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);transition:width .4s ease;border-radius:0 2px 2px 0}
+  .qhead{padding:13px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg2);font-size:13px;color:var(--text4)}
+  .qbody{flex:1;padding:20px 18px;max-width:560px;margin:0 auto;width:100%}
+  .qbody h2{font-family:var(--font-h);font-size:19px;font-weight:600;line-height:1.5;margin-bottom:22px;color:var(--text2)}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{padding:14px 15px;border-radius:12px;border:1px solid var(--bg3);background:rgba(30,41,59,.6);color:var(--text2);font-size:15px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:11px;font-family:var(--font-b)}
+  .opt:active{transform:scale(.98)}
+  .opt.sel{background:rgba(59,130,246,.12);border:2px solid var(--blue)}
+  .opt.ok{background:rgba(34,197,94,.1);border:2px solid var(--green);color:#86efac}
+  .opt.no{background:rgba(239,68,68,.1);border:2px solid var(--red);color:#fca5a5}
+  .opt.lock{cursor:default}
+  .olet{width:27px;height:27px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;font-family:monospace;background:var(--bg2);color:var(--text3)}
+  .opt.sel .olet{background:var(--blue);color:#fff}
+  .opt.ok .olet{background:var(--green);color:#fff}
+  .opt.no .olet{background:var(--red);color:#fff}
+  .qact{margin-top:20px}
+  .qact .btn{width:100%}
+  .fin-card{background:var(--bg4);border-radius:24px;padding:34px;max-width:380px;width:100%;text-align:center;backdrop-filter:blur(16px);border:1px solid var(--bg3)}
+  .fin-card .em{font-size:56px;margin-bottom:8px}
+  .fin-card h2{font-family:var(--font-h);font-size:23px;margin-bottom:4px}
+  .fin-card .nm{color:var(--text3);font-size:15px;margin-bottom:22px}
+  .fin-sc{font-size:50px;font-weight:700;font-family:monospace;margin-bottom:2px}
+  .fin-lb{font-size:16px;color:var(--text3);margin-bottom:26px}
+  .fin-note{background:rgba(15,23,42,.6);border-radius:var(--r);padding:13px;margin-bottom:20px;color:var(--text4);font-size:14px}
+  .live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid var(--green);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--green);margin-bottom:16px}
+  @media(max-width:480px){
+    .scards{gap:6px}.sc{padding:10px 4px}.sc .v{font-size:16px}
+    .card{padding:22px}#home h1{font-size:23px}table{font-size:12px}
+    .tabs{gap:4px}.tab{padding:8px 12px;font-size:12px}
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="screen center-screen active">
+  <div style="font-size:48px;margin-bottom:8px">🏥</div>
+  <h1>Медицинский тест</h1>
+  <p class="sub">Детская областная больница</p>
+  <div class="home-btns">
+    <button class="btn btn-p" onclick="goQuiz()">📝 Пройти тест</button>
+    <button class="btn btn-s" onclick="go('admin-login')">🔒 Панель администратора</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login" class="screen center-screen">
+  <div class="card">
+    <h2>🔒 Вход</h2>
+    <p class="hint">Введите PIN-код</p>
+    <input id="pin" class="inp inp-pin" type="password" maxlength="8" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
+    <div id="pin-err" class="err" style="display:none">Неверный PIN-код</div>
+    <div class="btn-row">
+      <button class="btn btn-s btn-sm" onclick="go('home')">Назад</button>
+      <button class="btn btn-p btn-sm" onclick="checkPin()">Войти</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="screen">
+  <div class="adm-head">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn btn-s btn-sm" onclick="stopRefresh();go('home')">← Выход</button>
+      <h1>Панель администратора</h1>
+    </div>
+    <div class="adm-info"><span class="dot"></span> <strong id="a-cnt" style="color:var(--text)">0</strong> участников</div>
+  </div>
+  <div class="tabs" id="adm-tabs">
+    <button class="tab on" data-t="t-qr">📱 QR</button>
+    <button class="tab" data-t="t-settings">⚙️ Настройки</button>
+    <button class="tab" data-t="t-tests">🧪 Тесты</button>
+    <button class="tab" data-t="t-res">📋 Результаты</button>
+  </div>
+
+  <!-- QR -->
+  <div id="t-qr" class="tab-c on">
+    <div class="qr-sec">
+      <div class="live-badge">🟢 Firebase подключён — результаты в реальном времени</div>
+      <div class="qr-card">
+        <h2>Отсканируйте QR-код</h2>
+        <p style="color:var(--text4);font-size:14px;margin-bottom:16px">Откройте камеру телефона</p>
+        <input id="share-url" class="inp inp-sm" placeholder="Вставьте URL этой страницы..." oninput="makeQR()" style="font-family:monospace">
+        <div id="qr-out"></div>
+      </div>
+      <div class="scards">
+        <div class="sc"><div class="i">👥</div><div class="v" id="s1" style="color:var(--blue)">0</div><div class="l">Участников</div></div>
+        <div class="sc"><div class="i">📊</div><div class="v" id="s2" style="color:var(--yellow)">—</div><div class="l">Средний %</div></div>
+        <div class="sc"><div class="i">🏆</div><div class="v" id="s3" style="color:var(--green)">—</div><div class="l">Лучший</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="t-settings" class="tab-c">
+    <div class="set-card">
+      <h3>⚙️ Параметры теста</h3>
+      <div class="set-row">
+        <label>Количество вопросов<br><span style="font-size:12px;color:var(--text4)">Из 100 выбирается случайно</span></label>
+        <div class="cnt-btns">
+          <button class="cnt-btn" onclick="changeCount(-1)">−</button>
+          <div class="cnt-val" id="cnt-display">12</div>
+          <button class="cnt-btn" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text4);margin-top:8px">Допустимо от 5 до 100</div>
+
+      <div class="set-row" style="margin-top:18px">
+        <label>Время на вопрос (сек)<br><span style="font-size:12px;color:var(--text4)">0 = без ограничения времени</span></label>
+        <div class="cnt-btns">
+          <button class="cnt-btn" onclick="changeTime(-5)">−</button>
+          <div class="cnt-val" id="time-display">0</div>
+          <button class="cnt-btn" onclick="changeTime(5)">+</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text4);margin-top:8px">Шаг изменения: 5 секунд</div>
+
+      <div style="margin-top:14px">
+        <button class="btn btn-p btn-sm" onclick="saveSettings()">💾 Сохранить</button>
+        <span class="set-save-msg" id="set-save-msg">✓ Сохранено!</span>
+      </div>
+    </div>
+    <div class="set-card">
+      <h3>🗑 Управление результатами</h3>
+      <button class="btn btn-r btn-sm" onclick="clearResults()">Удалить все результаты</button>
+    </div>
+  </div>
+
+  
+  <!-- TESTS -->
+  <div id="t-tests" class="tab-c">
+    <div class="set-card">
+      <h3>🧪 Импорт и экспорт тестов</h3>
+      <div style="color:var(--text3);font-size:14px;line-height:1.5;margin-bottom:14px">
+        Формат Excel: <strong>1 строка = 1 вопрос</strong>.<br>
+        Столбцы: <code>id</code>, <code>question</code>, <code>optionA</code>…<code>optionE</code>, <code>correct</code>, <code>active</code>.<br>
+        В <code>correct</code> укажите букву <strong>A/B/C/D/E</strong> или цифру <strong>1–5</strong>.<br>
+        В <code>active</code>: <strong>1</strong> — использовать, <strong>0</strong> — скрыть.
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn btn-s btn-sm" onclick="exportQuestionsExcel()">⬇️ Экспорт вопросов</button>
+        <button class="btn btn-p btn-sm" onclick="document.getElementById('questions-file').click()">⬆️ Импорт из Excel</button>
+      </div>
+      <input id="questions-file" type="file" accept=".xlsx,.xls" style="display:none" onchange="importQuestionsExcel(event)">
+      <div id="tests-msg" style="font-size:13px;color:var(--green);margin-top:12px;display:none"></div>
+      <div style="font-size:12px;color:var(--text4);margin-top:10px">
+        После импорта вопросы автоматически сохраняются в Firebase: <code>medquiz_ash/questions</code>
+      </div>
+    </div>
+    <div class="set-card">
+      <h3>📚 Сводка по банку вопросов</h3>
+      <div class="scards" style="max-width:none">
+        <div class="sc"><div class="i">📦</div><div class="v" id="qbank-total" style="color:var(--blue)">0</div><div class="l">Всего в банке</div></div>
+        <div class="sc"><div class="i">✅</div><div class="v" id="qbank-active" style="color:var(--green)">0</div><div class="l">Активных</div></div>
+        <div class="sc"><div class="i">🚫</div><div class="v" id="qbank-inactive" style="color:var(--yellow)">0</div><div class="l">Скрытых</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+
+  <div id="t-res" class="tab-c">
+    <div class="res-head">
+      <span>🔄 Обновляется автоматически</span>
+      <button class="btn btn-s btn-sm" onclick="exportResultsExcel()">📊 Скачать Excel</button>
+    </div>
+    <div id="res-body"></div>
+  </div>
+</div>
+
+<!-- NAME -->
+<div id="name-entry" class="screen center-screen">
+  <div class="card">
+    <div style="font-size:36px;text-align:center;margin-bottom:8px">👨‍⚕️</div>
+    <h2>Представьтесь</h2>
+    <p class="hint">Ваше имя будет видно в таблице результатов</p>
+    <input id="name-inp" class="inp" placeholder="Фамилия И.О." onkeydown="if(event.key==='Enter')startQuiz()">
+    <div class="btn-row">
+      <button class="btn btn-s btn-sm" onclick="go('home')">Назад</button>
+      <button class="btn btn-p btn-sm w2" onclick="startQuiz()">Начать тест →</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="pbar"><div class="pfill" id="pfill"></div></div>
+  <div class="qhead">
+    <span>Вопрос <strong id="qc" style="color:var(--text)">1</strong> из <span id="qt">12</span></span>
+    <span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end">
+      <span id="timer-wrap" style="color:var(--yellow);font-weight:700">⏱ <span id="timer-val">∞</span></span>
+      <span id="qn"></span>
+    </span>
+  </div>
+  <div class="qbody">
+    <h2 id="qtxt"></h2>
+    <div class="opts" id="qopts"></div>
+    <div class="qact" id="qact"></div>
+  </div>
+</div>
+
+<!-- FINISH -->
+<div id="finish" class="screen center-screen">
+  <div class="fin-card">
+    <div class="em" id="fe"></div>
+    <h2 id="fm"></h2>
+    <p class="nm" id="fn"></p>
+    <div class="fin-sc" id="fs"></div>
+    <div class="fin-lb" id="fl"></div>
+    <div class="fin-note">Ваш результат сохранён. Спасибо за участие!</div>
+    <button class="btn btn-s btn-sm" onclick="go('home')">На главную</button>
+  </div>
+</div>
+
+<script>
+// ================================================================
+//  CONFIG
+// ================================================================
+const ADMIN_PIN = "1972";
+const COUNT_KEY = "medquiz_count_ash";
+const TIME_KEY = "medquiz_time_ash";
+const DEFAULT_COUNT = 12;
+const DEFAULT_TIME = 0;
+const DB_URL = "https://datatestpetrov-default-rtdb.europe-west1.firebasedatabase.app";
+
+const ALL_QUESTIONS = [
+  {text:"Детская областная больница — это:",options:["Острая недостаточность кровообращения в результате анафилаксии, проявляющаяся снижением систолического АД ниже 90 мм рт.ст. или на 30% от рабочего уровня", "Любая аллергическая реакция с поражением кожных покровов", "Жизнеугрожающий бронхоспазм в сочетании с крапивницей", "Снижение диастолического АД ниже 60 мм рт.ст.", "Системная реакция гиперчувствительности без гемодинамических нарушений"],correct:0},
+  {text:"Анафилаксия — это:",options:["Острая недостаточность кровообращения", "Жизнеугрожающая системная реакция гиперчувствительности немедленного типа с быстрым развитием потенциально жизнеугрожающих изменений гемодинамики и/или нарушениями со стороны дыхательной системы", "Хроническая аллергическая реакция", "Реакция 3-го типа по Gell и Coombs", "Только кожные проявления аллергии"],correct:1},
+  {text:"Наиболее частая причина анафилактического шока среди медицинских препаратов:",options:["Миорелаксанты", "Рентгеноконтрастные средства", "Антибактериальные препараты системного действия для парентерального введения (прежде всего бета-лактамные)", "НПВП", "Латекс"],correct:2},
+  {text:"Какова доля лекарственных средств среди всех этиологических факторов анафилактического шока?",options:["5–10%", "10–15%", "31,2–46,5%", "60–70%", "23,3–31%"],correct:2},
+  {text:"Каков процент случаев анафилаксии с неустановленной причиной?",options:["1–5%", "10–15%", "24–26%", "35–40%", "50–55%"],correct:2},
+  {text:"Наиболее частая причина анафилаксии в детском возрасте:",options:["Яд перепончатокрылых насекомых", "Лекарственные средства", "Пищевые продукты", "Латекс", "Рентгеноконтрастные средства"],correct:2},
+  {text:"Патогенез анафилаксии обусловлен преимущественно:",options:["Реакциями 3-го типа гиперчувствительности по Gell и Coombs (иммунокомплексными)", "Реакциями 1-го типа гиперчувствительности по Gell и Coombs с участием IgE", "Реакциями 4-го типа (замедленного типа)", "Активацией системы комплемента", "Аутоиммунными механизмами"],correct:1},
+  {text:"Частота встречаемости анафилаксии в общей популяции (по зарубежным данным) составляет:",options:["0,1–0,5 на 100 000 в год", "1,5–7,9 на 100 000 в год", "15–20 на 100 000 в год", "50–100 на 100 000 в год", "0,01–0,1 на 100 000 в год"],correct:1},
+  {text:"Летальность при анафилаксии составляет:",options:["До 0,001%", "До 0,01%", "До 1%", "До 5%", "До 10%"],correct:2},
+  {text:"По коду МКБ Т88.6 кодируется:",options:["Детская областная больница, вызванный патологической реакцией на пищу", "Детская областная больница, неуточнённый", "Детская областная больница, связанный с введением сыворотки", "Детская областная больница, обусловленный патологической реакцией на адекватно назначенное и правильно применённое лекарственное средство", "Детская областная больница, вызванный укусом насекомого"],correct:3},
+  {text:"Гипотония у ребёнка от 1 месяца до 1 года определяется как систолическое АД:",options:["Ниже 90 мм рт.ст.", "Ниже 80 мм рт.ст.", "Ниже 70 мм рт.ст.", "Ниже 60 мм рт.ст.", "Ниже 50 мм рт.ст."],correct:2},
+  {text:"Гипотония у ребёнка от 11 до 17 лет определяется как систолическое АД:",options:["Ниже 70 мм рт.ст.", "Ниже 80 мм рт.ст.", "Ниже 90 мм рт.ст.", "Ниже 100 мм рт.ст.", "Ниже 60 мм рт.ст."],correct:2},
+  {text:"Формула расчёта гипотонии у детей от 1 до 10 лет:",options:["< 60 мм рт.ст. + (2 × возраст в годах)", "< 70 мм рт.ст. + (2 × возраст в годах)", "< 80 мм рт.ст. + (возраст в годах)", "< 90 мм рт.ст. − (2 × возраст в годах)", "< 70 мм рт.ст. + (3 × возраст в годах)"],correct:1},
+  {text:"Первым признаком гипотонии у детей может быть:",options:["Брадикардия", "Быстро нарастающая тахикардия", "Цианоз", "Нарушение сознания", "Судороги"],correct:1},
+  {text:"При 1-й степени тяжести АШ артериальное давление:",options:["Не определяется", "Снижено ниже 60/0 мм рт.ст.", "Снижено на 30–40 мм рт.ст. от рабочих величин", "Ниже 90/60 мм рт.ст.", "Снижено на 10–20 мм рт.ст."],correct:2},
+  {text:"При 3-й степени тяжести АШ характерно:",options:["Пациент в сознании, АД снижено на 30–40 мм рт.ст.", "АД ниже 90/40 мм рт.ст., сознание сохранено", "Потеря сознания, АД 60–40/0 мм рт.ст., нередко судороги, цианоз", "АД не определяется, остановка кровообращения", "Умеренная гипотония, сопор"],correct:2},
+  {text:"При 4-й степени тяжести АШ применяется:",options:["Внутримышечное введение эпинефрина", "Ингаляция кислорода", "Протокол сердечно-лёгочной реанимации", "Введение антигистаминных препаратов", "Введение кортикостероидов"],correct:2},
+  {text:"Злокачественное течение АШ характеризуется:",options:["Постепенным нарастанием симптомов, хорошим ответом на терапию", "Острым началом с быстрым падением АД, резистентностью к терапии, возможным развитием отёка лёгких и глубокой комы", "Временным купированием симптомов с последующими рецидивами", "Минимальными гемодинамическими нарушениями", "Преобладанием абдоминальной симптоматики"],correct:1},
+  {text:"Рецидивирующее течение АШ характеризуется:",options:["Единственным эпизодом с благоприятным исходом", "Постепенным нарастанием симптомов", "Возникновением повторного шокового состояния после первоначального купирования симптомов", "Быстрым купированием при минимальной терапии", "Преобладанием неврологической симптоматики"],correct:2},
+  {text:"Абортивное течение АШ отличается:",options:["Тяжёлыми гемодинамическими нарушениями", "Резистентностью к терапии", "Наиболее благоприятным течением, минимальными гемодинамическими нарушениями, быстрым купированием", "Затяжным характером симптомов", "Развитием отёка лёгких"],correct:2},
+  {text:"При асфиктическом варианте АШ преобладают:",options:["Гемодинамические нарушения в изолированном виде", "Симптомы острой дыхательной недостаточности", "Симптомы поражения органов брюшной полости", "Неврологические симптомы", "Кожные проявления"],correct:1},
+  {text:"АШ обычно развивается в течение какого времени после воздействия аллергена?",options:["В течение 6–12 часов", "В течение 24–48 часов", "В течение двух часов (обычно быстрее при парентеральном введении ЛС)", "В течение 3–5 суток", "Только немедленно, в момент контакта"],correct:2},
+  {text:"При фатальной реакции на ЛС для парентерального введения среднее время от первых симптомов до остановки кровообращения составляет:",options:["30 минут", "15 минут", "5 минут", "1 минуту", "60 минут"],correct:2},
+  {text:"Диагностический критерий анафилаксии — острое начало с поражением кожи/слизистых в сочетании с:",options:["Только болью в животе", "Только повышением температуры", "Респираторными нарушениями и/или снижением АД", "Только головной болью", "Только тахикардией"],correct:2},
+  {text:"С каким состоянием НЕ проводится дифференциальная диагностика АШ?",options:["Вазовагальные реакции", "Системный мастоцитоз", "Тромбоэмболия лёгочной артерии", "Острый аппендицит без нарушений гемодинамики", "Кардиогенный шок"],correct:3},
+  {text:"Лабораторный маркер, используемый для дифференциальной диагностики АШ с другими видами шока:",options:["Уровень гистамина", "Активность сывороточной триптазы", "Уровень IgE", "С-реактивный белок", "Прокальцитонин"],correct:1},
+  {text:"Когда рекомендуется определять уровень сывороточной триптазы при подозрении на АШ?",options:["Только через 24 часа после начала реакции", "Через 15 минут — 3 часа после первых симптомов и после выздоровления", "Только до начала лечения", "Через 12–24 часа", "Только при 3–4-й степени тяжести"],correct:1},
+  {text:"Нормальный уровень сывороточной триптазы:",options:["Исключает диагноз АШ", "Не исключает диагноз АШ", "Подтверждает диагноз АШ", "Свидетельствует о лёгком течении", "Требует отмены лечения"],correct:1},
+  {text:"При отсутствии возможности подключить монитор рекомендуется измерять АД и пульс вручную каждые:",options:["10–15 минут", "5–10 минут", "2–5 минут", "1 минуту", "30 минут"],correct:2},
+  {text:"Первое действие при развитии АШ на внутривенно вводимый препарат:",options:["Продолжить введение препарата медленнее", "Немедленно остановить введение ЛС, сохранить венозный доступ", "Сменить препарат", "Ввести антигистаминный препарат", "Уложить пациента горизонтально и поднять голову"],correct:1},
+  {text:"В какое положение следует уложить пациента с АШ?",options:["На животе", "Полусидя", "На спине с приподнятыми нижними конечностями и повёрнутой на бок головой", "На правом боку", "Сидя с опущенными ногами"],correct:2},
+  {text:"Почему при АШ нельзя переводить пациента в положение сидя?",options:["Это затрудняет дыхание", "В течение нескольких секунд это может привести к фатальному исходу", "Это усиливает бронхоспазм", "Это увеличивает АД", "Это вызывает рвоту"],correct:1},
+  {text:"В каком положении рекомендуется уложить беременную с АШ?",options:["На правом боку", "На спине с приподнятыми ногами", "На левом боку с обеспечением проходимости верхних дыхательных путей", "Полусидя", "На животе"],correct:2},
+  {text:"При АШ с удушьем вследствие бронхоспазма или ангиоотёка верхних дыхательных путей рекомендуется:",options:["Положение на спине с приподнятыми ногами", "Положение Тренделенбурга", "Положение сидя", "Положение на левом боку", "Горизонтальное положение"],correct:2},
+  {text:"Первостепенный препарат для купирования АШ:",options:["Дексаметазон", "Дифенгидрамин", "Эпинефрин", "Сальбутамол", "Атропин"],correct:2},
+  {text:"Предпочтительный путь введения эпинефрина при АШ:",options:["Подкожно", "В дельтовидную мышцу", "Внутримышечно в переднебоковую поверхность верхней трети бедра", "Внутривенно болюсно", "Эндотрахеально"],correct:2},
+  {text:"Доза эпинефрина для в/м введения при АШ:",options:["0,001 мг/кг", "0,1 мг/кг", "0,01 мг/кг", "0,05 мг/кг", "1 мг/кг"],correct:2},
+  {text:"Максимальная разовая доза эпинефрина для взрослого пациента при в/м введении:",options:["0,1 мг", "0,3 мг", "0,5 мг", "1,0 мг", "2,0 мг"],correct:2},
+  {text:"Максимальная разовая доза эпинефрина для ребёнка 6–12 лет:",options:["0,05 мг", "0,1 мг", "0,15 мг", "0,3 мг", "0,5 мг"],correct:3},
+  {text:"Максимальная разовая доза эпинефрина для ребёнка до 6 лет:",options:["0,05 мг", "0,1 мг", "0,15 мг", "0,3 мг", "0,5 мг"],correct:2},
+  {text:"Через какое время вводится повторная доза эпинефрина при отсутствии эффекта от первой?",options:["Не менее чем через 1 минуту", "Не менее чем через 5 минут", "Не менее чем через 15 минут", "Не менее чем через 30 минут", "Сразу после первой дозы"],correct:1},
+  {text:"Внутривенное введение эпинефрина при АШ допустимо только при:",options:["Любом варианте АШ", "Недостаточном ответе на 2 и более в/м дозы и обязательно при кардиореспираторном мониторинге", "АШ 1-й степени тяжести", "Только у детей", "Только в педиатрической практике"],correct:1},
+  {text:"Режим непрерывного в/в введения эпинефрина у детей при АШ:",options:["0,01 мкг/кг/мин", "0,1 мкг/кг/мин с титрованием до 1 мкг/кг/мин", "1 мкг/кг/мин фиксированно", "0,5–1,0 мл/кг/ч", "10 мкг/кг/мин"],correct:1},
+  {text:"Режим непрерывного в/в введения эпинефрина у взрослых при АШ:",options:["0,1 мкг/кг/мин", "0,5–1,0 мл/кг/ч (раствор 1 мл эпинефрина на 100 мл NaCl 0,9%)", "2 мл/кг/ч", "5 мкг/мин", "0,01 мг/кг болюсно каждые 5 минут"],correct:1},
+  {text:"С какой целью после введения эпинефрина рекомендуется в/в введение растворов электролитов?",options:["Для восполнения дефицита глюкозы", "Для коррекции относительной гиповолемии", "Для введения кортикостероидов", "Для ощелачивания крови", "Для снижения уровня гистамина"],correct:1},
+  {text:"Рекомендуемая доза растворов электролитов при АШ:",options:["1–5 мл/кг", "10–30 мл/кг", "50 мл/кг", "100 мл фиксированно", "5–10 мл/кг"],correct:1},
+  {text:"Почему растворы декстрозы не рекомендуются при АШ?",options:["Они вызывают гипогликемию", "Вследствие быстрой экстравазации введённого объёма", "Они повышают АД", "Они усиливают аллергическую реакцию", "Они несовместимы с эпинефрином"],correct:1},
+  {text:"Объём 0,9% раствора натрия хлорида при АШ у пациента с нормотензией:",options:["100–200 мл", "250–500 мл", "500–1000 мл", "2000–3000 мл", "Более 3000 мл"],correct:2},
+  {text:"Объём 0,9% NaCl при АШ у пациента с артериальной гипотензией:",options:["100–250 мл", "500–1000 мл", "1000–2000 мл", "Более 3000 мл", "250–500 мл"],correct:2},
+  {text:"У детей при введении жидкости при АШ рекомендуемый объём:",options:["5 мл/кг", "10 мл/кг", "20 мл/кг", "30 мл/кг", "50 мл/кг"],correct:2},
+  {text:"С какой целью вводятся кортикостероиды системного действия при АШ?",options:["Для немедленного повышения АД", "Для снижения риска продлённой фазы респираторных проявлений", "Для купирования бронхоспазма в первые минуты", "Как замена эпинефрину", "Для профилактики инфекционных осложнений"],correct:1},
+  {text:"Когда вводятся кортикостероиды при АШ?",options:["Вместо эпинефрина как первый препарат", "После стабилизации АД и устранения респираторных проявлений после введения эпинефрина", "До введения эпинефрина", "Одновременно с первой дозой эпинефрина", "Только при 1–2-й степени тяжести"],correct:1},
+  {text:"Доза метилпреднизолона при АШ у взрослых:",options:["4–8 мг в/в", "20–30 мг в/в", "50–100 мг в/в", "250–500 мг в/в", "1000 мг в/в"],correct:2},
+  {text:"Доза гидрокортизона при АШ у взрослых:",options:["50 мг", "100 мг", "200 мг", "500 мг", "1000 мг"],correct:2},
+  {text:"Доза дексаметазона при АШ у взрослых (эквивалентная доза):",options:["2–4 мг", "4–8 мг", "8–16 мг", "20–40 мг", "1–2 мг"],correct:2},
+  {text:"Доза метилпреднизолона при АШ у детей:",options:["0,1–0,5 мг/кг, максимум 20 мг", "1–2 мг/кг, максимум 50 мг", "5–10 мг/кг, максимум 200 мг", "0,5 мг/кг фиксированно", "10 мг/кг"],correct:1},
+  {text:"Доза гидрокортизона при АШ у детей:",options:["0,5–1 мг/кг, максимум 50 мг", "2–4 мг/кг, максимум 100 мг", "5–10 мг/кг, максимум 200 мг", "1 мг/кг, максимум 25 мг", "10 мг/кг"],correct:1},
+  {text:"Антигистаминные препараты при АШ вводятся:",options:["Как первый препарат выбора вместо эпинефрина", "После стабилизации АД при наличии проявлений со стороны кожи и слизистых", "До введения эпинефрина для профилактики", "Только при 1-й степени тяжести", "Вместо кортикостероидов"],correct:1},
+  {text:"Почему антигистаминные препараты не являются препаратами первого выбора при АШ?",options:["Они вызывают тяжёлые аллергические реакции", "Начало их действия существенно превышает начало действия эпинефрина", "Они несовместимы с эпинефрином", "Они противопоказаны при гипотонии", "Они запрещены для в/в введения"],correct:1},
+  {text:"Какой антигистаминный препарат запрещён при недоношенности и в период новорождённости?",options:["Клемастин", "Хлоропирамин", "Дифенгидрамин", "Лоратадин", "Цетиризин"],correct:2},
+  {text:"Доза клемастина при АШ у взрослых (в/в или в/м):",options:["0,1% — 1 мл (1 мг)", "0,1% — 2 мл (2 мг)", "0,1% — 5 мл (5 мг)", "1% — 2 мл (20 мг)", "2% — 1 мл (20 мг)"],correct:1},
+  {text:"При сохраняющемся бронхоспазме несмотря на введение эпинефрина рекомендуется:",options:["Увеличить дозу эпинефрина", "Применение селективного бета2-адреномиметика (сальбутамол) через небулайзер", "Внутривенное введение теофиллина", "Системные кортикостероиды в/в болюсно", "Интубация трахеи"],correct:1},
+  {text:"Доза сальбутамола через небулайзер при АШ:",options:["0,5 мг/0,5 мл", "1 мг/1 мл", "2,5 мг/2,5 мл", "5 мг/5 мл", "0,1 мг/мл"],correct:2},
+  {text:"Хирургическое лечение при АШ:",options:["Применяется в тяжёлых случаях", "Показано при отёке гортани", "Не проводится", "Применяется при 4-й степени тяжести", "Показано всем пациентам"],correct:2},
+  {text:"Минимальный срок госпитализации в отделение реанимации при АШ составляет:",options:["6 часов", "12 часов", "24 часа", "48 часов", "72 часа"],correct:2},
+  {text:"При купировании АШ минимальный рекомендуемый срок стационарного лечения:",options:["6 часов", "12–24 часа", "3–5 суток", "7–10 суток", "1 месяц"],correct:1},
+  {text:"В течение какого времени после АШ могут сохраняться нарушения функции органов, требующие амбулаторного наблюдения?",options:["1–3 дней", "1 недели", "3–4 недель", "6 месяцев", "1 года"],correct:2},
+  {text:"Консультация врача аллерголога-иммунолога после перенесённого АШ необходима для:",options:["Назначения антибиотиков", "Выявления аллергена и получения рекомендаций по профилактике повторных реакций", "Определения дозы кортикостероидов", "Оценки функции лёгких", "Назначения аллерген-специфической иммунотерапии сразу"],correct:1},
+  {text:"Фактор риска тяжёлой анафилаксии среди перечисленных:",options:["Женский пол", "Возраст до 18 лет", "Использование бета-адреноблокаторов или ингибиторов АПФ", "Отсутствие сопутствующих заболеваний", "Пищевая аллергия в анамнезе"],correct:2},
+  {text:"Наличие какого сопутствующего заболевания является фактором риска смертельной анафилаксии?",options:["Сахарный диабет", "Гипертоническая болезнь", "Бронхиальная астма, сердечно-сосудистые заболевания, мастоцитоз", "Хроническая почечная недостаточность", "Ожирение"],correct:2},
+  {text:"Фактор риска двухфазной анафилаксии при обследовании:",options:["Нормальный пульс", "Высокое систолическое АД", "Большое пульсовое давление, артериальная гипотония, свистящее дыхание, диарея", "Нормальная температура тела", "Отсутствие кожных проявлений"],correct:2},
+  {text:"Позднее введение эпинефрина является фактором риска:",options:["Только лёгкого течения АШ", "Смертельной и двухфазной анафилаксии", "Только рецидивирующего течения", "Только у детей", "Развития мастоцитоза"],correct:1},
+  {text:"Премедикация перед операцией у пациента с отягощённым аллергологическим анамнезом включает (за 1 час до вмешательства):",options:["Только антигистаминный препарат", "Кортикостероид + антигистаминный препарат в/м или в/в", "Только НПВП", "Только эпинефрин", "Антибиотик + антигистаминный"],correct:1},
+  {text:"Доза дексаметазона для премедикации перед операцией у пациентов с отягощённым аллергологическим анамнезом:",options:["0,5–1 мг", "2–4 мг", "4–8 мг", "16–24 мг", "40 мг"],correct:2},
+  {text:"В противошоковый набор для процедурных кабинетов обязательно включается:",options:["Только антигистаминный препарат", "Только кортикостероиды", "Раствор эпинефрина 0,1%, кортикостероиды, антигистаминные, сальбутамол, растворы для инфузий", "Только сальбутамол и эпинефрин", "Адреналин и антибиотики"],correct:2},
+  {text:"Какое положение рекомендуется при АШ у пациента с потерей сознания, у которого нет бронхоспазма?",options:["На животе", "На спине с приподнятыми нижними конечностями и повёрнутой набок головой", "Полусидя", "На правом боку", "Сидя"],correct:1},
+  {text:"При АШ на ужаление перепончатокрылым следует:",options:["Немедленно промыть место ужаления мыльной водой и не предпринимать других действий", "Удалить жало (при наличии), выше места ужаления наложить венозный жгут", "Провести промывание желудка", "Ввести антибиотики", "Только дать антигистаминный препарат внутрь"],correct:1},
+  {text:"Следует ли промывать желудок, если это требует значительных затрат времени при АШ?",options:["Да, это необходимо в любом случае", "Нет, делать этого не следует", "Да, но только при пищевой анафилаксии", "Да, только у детей", "Да, если АШ развился более часа назад"],correct:1},
+  {text:"Ингаляция кислорода при АШ проводится с целью:",options:["Снижения уровня углекислого газа", "Коррекции гипоксемии", "Купирования бронхоспазма", "Снижения АД", "Уменьшения отёка"],correct:1},
+  {text:"Типичный вариант АШ характеризуется:",options:["Только гемодинамическими нарушениями без кожных симптомов", "Гемодинамическими нарушениями в сочетании с поражением кожи и слизистых (крапивница, ангиоотёк), бронхоспазмом", "Только неврологическими симптомами", "Только абдоминальными симптомами", "Исключительно дыхательной недостаточностью"],correct:1},
+  {text:"Затяжной характер течения АШ характерен для шока, развившегося вследствие:",options:["Введения адреналина", "Пищевой анафилаксии", "Введения препаратов пролонгированного действия", "Укуса пчелы", "Введения рентгеноконтрастных средств"],correct:2},
+  {text:"Диагноз АШ без выраженных гемодинамических нарушений:",options:["Правомерен при наличии бронхоспазма и крапивницы", "Правомерен при любых аллергических проявлениях", "Неправомерен — без гемодинамических нарушений это анафилаксия, но не АШ", "Правомерен при потере сознания", "Правомерен при наличии ангиоотёка"],correct:2},
+  {text:"В каком случае у пациента с острой аллергической реакцией ставится диагноз «анафилаксия», но НЕ «АШ»?",options:["При снижении АД на 30% от рабочего уровня", "При жизнеугрожающем бронхоспазме в сочетании с крапивницей без гемодинамических нарушений", "При потере сознания", "При АД ниже 90 мм рт.ст.", "При генерализованной крапивнице с гипотонией"],correct:1},
+  {text:"Среди пищевых продуктов наиболее частые провоцирующие факторы анафилаксии:",options:["Цитрусовые, шоколад, кофе", "Коровье молоко, рыба и морепродукты, орехи, арахис, яйца", "Только злаковые культуры", "Красное мясо и птица", "Только молочные продукты"],correct:1},
+  {text:"Наиболее частая причина анафилаксии у взрослых:",options:["Пищевые продукты", "Латекс", "Лекарственные средства и яд перепончатокрылых", "Рентгеноконтрастные вещества", "Пыльца растений"],correct:2},
+  {text:"Среднее время от первых симптомов до остановки кровообращения при фатальной реакции на пищевые продукты:",options:["5 минут", "15 минут", "30 минут", "60 минут", "2 часа"],correct:2},
+  {text:"В 2 степени тяжести АШ АД снижается до:",options:["120/80 мм рт.ст.", "100/70 мм рт.ст.", "Ниже 90–60/40 мм рт.ст.", "Не определяется", "40/0 мм рт.ст."],correct:2},
+  {text:"Какое положение тела при 2-й степени тяжести АШ со стридорозным дыханием является предпочтительным?",options:["На спине с приподнятыми ногами", "На левом боку", "Сидя — при удушье от бронхоспазма/ангиоотёка верхних дыхательных путей", "На животе", "Положение Тренделенбурга"],correct:2},
+  {text:"Уровень убедительности рекомендации для в/м введения эпинефрина в переднебоковую поверхность бедра:",options:["А (сильная рекомендация)", "В (условная рекомендация)", "С (слабая рекомендация)", "Рекомендация не разработана", "Экспертное мнение без УУР"],correct:1},
+  {text:"Что такое «двухфазная анафилаксия»?",options:["Анафилаксия, протекающая одновременно с кожными и респираторными симптомами", "Анафилаксия, при которой возникает повторный эпизод реакции после первоначального купирования симптомов", "Анафилаксия с двумя различными аллергенами", "Анафилаксия с двумя стадиями шока", "Анафилаксия с бронхоспазмом и гипотонией одновременно"],correct:1},
+  {text:"При сборе анамнеза у пациента с АШ важно обратить внимание на:",options:["Только время суток возникновения реакции", "Обстоятельства развития АШ (ЛС, пища, ужаление), время возникновения, факторы риска", "Только наследственность", "Только хронические заболевания", "Только предыдущее лечение"],correct:1},
+  {text:"Фактор риска тяжёлого АШ, связанный с приёмом лекарственных препаратов:",options:["Приём аспирина", "Приём бета-адреноблокаторов и ингибиторов АКФ", "Приём антибиотиков", "Приём антигистаминных препаратов", "Приём витаминов"],correct:1},
+  {text:"Мониторинг пульса, АД и ЧДД при АШ должен проводиться:",options:["Только при 3–4-й степени тяжести", "Всем пациентам с анафилаксией/АШ при оказании помощи", "Только детям", "Только при в/в введении эпинефрина", "Только в отделении реанимации"],correct:1},
+  {text:"Что обязательно следует наладить или сохранить при развитии АШ на внутривенно вводимое ЛС?",options:["Мочевой катетер", "Венозный доступ", "Назогастральный зонд", "Артериальный катетер", "Эпидуральный катетер"],correct:1},
+  {text:"Скорость введения дифенгидрамина при АШ у взрослых внутривенно:",options:["Как можно быстрее (болюсно)", "Медленно (не менее 5 минут)", "Капельно в течение 2 часов", "В течение 30 минут", "В течение 1 часа"],correct:1},
+  {text:"Разведение эпинефрина для в/в введения взрослым при рефрактерном АШ:",options:["1 мл на 10 мл физ. раствора", "1 мл на 100 мл раствора натрия хлорида 0,9%, скорость 0,5–1 мл/кг/ч", "1 мл на 500 мл", "10 мл на 100 мл", "Без разведения"],correct:1},
+  {text:"При наличии в анамнезе сердечной недостаточности объём жидкости за 5–10 мин при АШ составляет не более:",options:["100 мл", "250 мл", "500 мл", "1000 мл", "2000 мл"],correct:1},
+  {text:"Согласно критериям качества медицинской помощи, повторная доза эпинефрина при отсутствии ответа вводится в/м не менее чем через:",options:["1 минуту", "3 минуты", "5 минут", "10 минут", "15 минут"],correct:2},
+  {text:"Пациентам с АШ на ужаления перепончатокрылыми рекомендуется иметь при себе:",options:["Только антигистаминные таблетки", "Раствор эпинефрина 0,1%, кортикостероиды в растворе, антигистаминные препараты для системного использования", "Только аэрозоль сальбутамола", "Только нашатырный спирт", "Только дексаметазон в таблетках"],correct:1},
+  {text:"Введение эпинефрина в/в при АШ допустимо только при обязательном мониторировании:",options:["Температуры тела", "Сатурации кислорода", "Электрокардиографических данных (кардиореспираторном мониторинге)", "Уровня глюкозы крови", "Мочеотделения"],correct:2},
+];
+
+// ================================================================
+//  FIREBASE REST API
+// ================================================================
+async function fbGet(path) {
+  try {
+    const r = await fetch(DB_URL + path + ".json");
+    return await r.json();
+  } catch(e) { return null; }
+}
+async function fbSet(path, data) {
+  try {
+    await fetch(DB_URL + path + ".json", {
+      method: "PUT",
+      body: JSON.stringify(data)
+    });
+  } catch(e) {}
+}
+async function fbPush(path, data) {
+  try {
+    const r = await fetch(DB_URL + path + ".json", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+    return await r.json();
+  } catch(e) { return null; }
+}
+async function fbDelete(path) {
+  try {
+    await fetch(DB_URL + path + ".json", { method: "DELETE" });
+  } catch(e) {}
+}
+
+// ================================================================
+//  STATE
+// ================================================================
+let questionBank = [...ALL_QUESTIONS.map(q => ({...q, active: q.active !== false}))];
+let questions = questionBank.filter(q => q.active !== false);
+let results = [];
+let quizCount = DEFAULT_COUNT;
+let timePerQuestion = DEFAULT_TIME;
+let timerInterval = null;
+let timeLeft = 0;
+let quizState = { name:"", current:0, answers:{}, selected:null, confirmed:false, qIndices:[] };
+let refreshTimer = null;
+
+// ================================================================
+//  INIT
+// ================================================================
+window.addEventListener("DOMContentLoaded", async () => {
+  await loadSettings();
+  await loadQuestions();
+  document.querySelectorAll("#adm-tabs .tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll("#adm-tabs .tab").forEach(t => t.classList.remove("on"));
+      document.querySelectorAll(".tab-c").forEach(c => c.classList.remove("on"));
+      tab.classList.add("on");
+      document.getElementById(tab.dataset.t).classList.add("on");
+    });
+  });
+  const url = window.location.href.split("?")[0].split("#")[0];
+  if (url.startsWith("http")) {
+    document.getElementById("share-url").value = url;
+    makeQR();
+  }
+  updateQuestionSummary();
+});
+
+function go(id) {
+  if (id !== "quiz") stopQuestionTimer();
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+
+function updateQuestionSummary() {
+  const total = questionBank.length;
+  const active = questionBank.filter(q => q.active !== false).length;
+  const inactive = total - active;
+  const a = document.getElementById("qbank-total");
+  const b = document.getElementById("qbank-active");
+  const c = document.getElementById("qbank-inactive");
+  if (a) a.textContent = total;
+  if (b) b.textContent = active;
+  if (c) c.textContent = inactive;
+}
+
+function setQuestionBank(list) {
+  questionBank = (Array.isArray(list) ? list : []).map((q, idx) => ({
+    text: String(q.text || "").trim(),
+    options: (Array.isArray(q.options) ? q.options : []).map(v => String(v || "").trim()).filter(Boolean),
+    correct: Number.isFinite(parseInt(q.correct)) ? parseInt(q.correct) : 0,
+    active: q.active !== false
+  })).filter(q => q.text && q.options.length >= 2 && q.correct >= 0 && q.correct < q.options.length);
+
+  if (!questionBank.length) {
+    questionBank = [...ALL_QUESTIONS.map(q => ({...q, active: q.active !== false}))];
+  }
+  questions = questionBank.filter(q => q.active !== false);
+  updateQuestionSummary();
+}
+
+async function loadQuestions() {
+  const remote = await fbGet("/medquiz_ash/questions");
+  if (remote) {
+    const arr = Array.isArray(remote) ? remote : Object.values(remote);
+    setQuestionBank(arr);
+  } else {
+    setQuestionBank([...ALL_QUESTIONS.map(q => ({...q, active: q.active !== false}))]);
+  }
+}
+
+function questionToRow(q, idx) {
+  const opts = Array.isArray(q.options) ? q.options : [];
+  const letters = ["A","B","C","D","E"];
+  return {
+    id: idx + 1,
+    question: q.text || "",
+    optionA: opts[0] || "",
+    optionB: opts[1] || "",
+    optionC: opts[2] || "",
+    optionD: opts[3] || "",
+    optionE: opts[4] || "",
+    correct: letters[q.correct] || "A",
+    active: q.active === false ? 0 : 1
+  };
+}
+
+function showTestsMessage(msg, isError=false) {
+  const el = document.getElementById("tests-msg");
+  if (!el) return;
+  el.style.display = "block";
+  el.style.color = isError ? "var(--red)" : "var(--green)";
+  el.textContent = msg;
+}
+
+function parseCorrectValue(v) {
+  const raw = String(v ?? "").trim().toUpperCase();
+  if (!raw) return null;
+  const letters = {A:0, B:1, C:2, D:3, E:4};
+  if (raw in letters) return letters[raw];
+  const n = parseInt(raw);
+  if (Number.isFinite(n) && n >= 1 && n <= 5) return n - 1;
+  return null;
+}
+
+function normalizeQuestionRow(row, idx) {
+  const question = String(
+    row.question ?? row.Question ?? row["Вопрос"] ?? row["вопрос"] ?? ""
+  ).trim();
+
+  const options = [
+    row.optionA ?? row.A ?? row["Ответ A"] ?? row["Вариант A"] ?? "",
+    row.optionB ?? row.B ?? row["Ответ B"] ?? row["Вариант B"] ?? "",
+    row.optionC ?? row.C ?? row["Ответ C"] ?? row["Вариант C"] ?? "",
+    row.optionD ?? row.D ?? row["Ответ D"] ?? row["Вариант D"] ?? "",
+    row.optionE ?? row.E ?? row["Ответ E"] ?? row["Вариант E"] ?? ""
+  ].map(v => String(v ?? "").trim()).filter(Boolean);
+
+  const correct = parseCorrectValue(row.correct ?? row.Correct ?? row["Верный"] ?? row["Правильный"] ?? row["correct answer"]);
+  const activeRaw = String(row.active ?? row.Active ?? row["Активен"] ?? row["Использовать"] ?? "1").trim().toLowerCase();
+  const active = !(activeRaw === "0" || activeRaw === "false" || activeRaw === "нет" || activeRaw === "no");
+
+  if (!question || options.length < 2 || correct === null || correct >= options.length) return null;
+
+  return { text: question, options, correct, active };
+}
+
+function exportQuestionsExcel() {
+  const rows = questionBank.map((q, idx) => questionToRow(q, idx));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Questions");
+  XLSX.writeFile(wb, "questions.xlsx");
+}
+
+async function importQuestionsExcel(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  try {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, {type: "array"});
+    const sheetName = workbook.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {defval: ""});
+    const imported = rows.map(normalizeQuestionRow).filter(Boolean);
+
+    if (!imported.length) {
+      showTestsMessage("Не удалось распознать вопросы. Проверьте структуру Excel.", true);
+      return;
+    }
+
+    await fbSet("/medquiz_ash/questions", imported);
+    setQuestionBank(imported);
+    showTestsMessage(`Импортировано вопросов: ${imported.length}. Данные сохранены в Firebase.`);
+  } catch (e) {
+    showTestsMessage("Ошибка импорта Excel-файла.", true);
+  } finally {
+    event.target.value = "";
+  }
+}
+
+
+// ================================================================
+//  SETTINGS
+// ================================================================
+async function loadSettings() {
+  try {
+    const d = localStorage.getItem(COUNT_KEY);
+    quizCount = d ? parseInt(d) : DEFAULT_COUNT;
+    if (isNaN(quizCount) || quizCount < 5) quizCount = DEFAULT_COUNT;
+  } catch { quizCount = DEFAULT_COUNT; }
+
+  try {
+    const t = localStorage.getItem(TIME_KEY);
+    timePerQuestion = t !== null ? parseInt(t) : DEFAULT_TIME;
+    if (isNaN(timePerQuestion) || timePerQuestion < 0) timePerQuestion = DEFAULT_TIME;
+  } catch { timePerQuestion = DEFAULT_TIME; }
+
+  const remote = await fbGet("/medquiz_ash/settings");
+  if (remote) {
+    if (Number.isFinite(parseInt(remote.questionCount))) {
+      quizCount = Math.max(5, Math.min(100, parseInt(remote.questionCount)));
+      localStorage.setItem(COUNT_KEY, quizCount);
+    }
+    if (Number.isFinite(parseInt(remote.timePerQuestion))) {
+      timePerQuestion = Math.max(0, parseInt(remote.timePerQuestion));
+      localStorage.setItem(TIME_KEY, timePerQuestion);
+    }
+  }
+  updateSettingsDisplay();
+}
+function updateSettingsDisplay() {
+  document.getElementById("cnt-display").textContent = quizCount;
+  document.getElementById("time-display").textContent = timePerQuestion;
+}
+function changeCount(delta) {
+  quizCount = Math.max(5, Math.min(100, quizCount + delta));
+  updateSettingsDisplay();
+}
+function changeTime(delta) {
+  timePerQuestion = Math.max(0, Math.min(600, timePerQuestion + delta));
+  updateSettingsDisplay();
+}
+async function saveSettings() {
+  localStorage.setItem(COUNT_KEY, quizCount);
+  localStorage.setItem(TIME_KEY, timePerQuestion);
+  await fbSet("/medquiz_ash/settings", {
+    questionCount: quizCount,
+    timePerQuestion: timePerQuestion
+  });
+  const msg = document.getElementById("set-save-msg");
+  msg.style.display = "inline";
+  setTimeout(() => msg.style.display = "none", 2000);
+}
+
+// ================================================================
+//  ADMIN LOGIN
+// ================================================================
+function checkPin() {
+  const p = document.getElementById("pin").value;
+  if (p === ADMIN_PIN) {
+    document.getElementById("pin").value = "";
+    document.getElementById("pin-err").style.display = "none";
+    go("admin");
+    startRefresh();
+  } else {
+    document.getElementById("pin-err").style.display = "block";
+    setTimeout(() => document.getElementById("pin-err").style.display = "none", 2000);
+  }
+}
+
+// ================================================================
+//  QR CODE
+// ================================================================
+function makeQR() {
+  const url = document.getElementById("share-url").value.trim();
+  const out = document.getElementById("qr-out");
+  if (!url) { out.innerHTML = ""; return; }
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=1e293b&margin=8`;
+  out.innerHTML = `<div class="qr-box"><img src="${qrSrc}" alt="QR"></div>
+  <div style="background:rgba(241,245,249,.08);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--text4);margin-top:6px;word-break:break-all;font-family:monospace;text-align:center">${url}</div>`;
+}
+
+// ================================================================
+//  REFRESH LOOP (Firebase)
+// ================================================================
+function startRefresh() {
+  stopRefresh();
+  loadAndRenderResults();
+  refreshTimer = setInterval(loadAndRenderResults, 5000);
+}
+function stopRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
+
+async function loadAndRenderResults() {
+  const data = await fbGet("/medquiz_ash/results");
+  if (!data) {
+    results = [];
+  } else {
+    results = Object.entries(data).map(([key, val]) => ({ ...val, _key: key }));
+    results.sort((a, b) => b.score - a.score);
+  }
+  renderResults();
+  updateSummary();
+}
+
+function updateSummary() {
+  const n = results.length;
+  document.getElementById("a-cnt").textContent = n;
+  document.getElementById("s1").textContent = n;
+  if (n > 0) {
+    const avg = Math.round(results.reduce((s, r) => s + (r.score / (r.total || quizCount) * 100), 0) / n);
+    const best = results[0];
+    document.getElementById("s2").textContent = avg + "%";
+    document.getElementById("s3").textContent = best.score + "/" + (best.total || quizCount);
+  } else {
+    document.getElementById("s2").textContent = "—";
+    document.getElementById("s3").textContent = "—";
+  }
+}
+
+// ================================================================
+//  RESULTS TABLE
+// ================================================================
+function renderResults() {
+  const el = document.getElementById("res-body");
+  if (results.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="i">📭</div><p>Пока никто не прошёл тест</p></div>';
+    return;
+  }
+  const medals = ["🥇","🥈","🥉"];
+  let html = '<div class="twrap"><table><thead><tr><th>№</th><th class="l">Имя</th><th>Балл</th><th>%</th><th>Время</th><th>🗑</th></tr></thead><tbody>';
+  results.forEach((r, i) => {
+    const total = r.total || quizCount;
+    const pct = Math.round((r.score / total) * 100);
+    const col = pct >= 80 ? "var(--green)" : pct >= 50 ? "var(--yellow)" : "var(--red)";
+    html += `<tr>
+      <td style="font-weight:700;color:var(--text4)">${medals[i] || (i+1)}</td>
+      <td class="l" style="font-weight:600">${esc(r.name)}</td>
+      <td style="font-family:monospace;font-weight:700">${r.score}/${total}</td>
+      <td><span class="bar-w"><span class="bar-f" style="width:${pct}%;background:${col}"></span></span><span style="font-size:13px;color:${col};font-weight:600;font-family:monospace">${pct}%</span></td>
+      <td style="font-size:12px;color:var(--text4)">${r.time || "—"}</td>
+      <td><button class="btn btn-r btn-sm" style="padding:6px 10px" onclick="deleteResult('${r._key}')">🗑</button></td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+async function deleteResult(key) {
+  if (!confirm("Удалить этот результат?")) return;
+  await fbDelete("/medquiz_ash/results/" + key);
+  await loadAndRenderResults();
+}
+
+function exportResultsExcel() {
+  if (typeof XLSX === "undefined") {
+    alert("Модуль Excel ещё не загрузился. Повторите через пару секунд.");
+    return;
+  }
+  const rows = results.map((r, i) => {
+    const total = r.total || quizCount;
+    const pct = Math.round((r.score / total) * 100);
+    return {
+      "№": i + 1,
+      "Имя": r.name || "",
+      "Правильных": r.score ?? 0,
+      "Всего": total,
+      "Процент": pct,
+      "Время": r.time || "—"
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = [
+    { wch: 5 },
+    { wch: 28 },
+    { wch: 12 },
+    { wch: 8 },
+    { wch: 10 },
+    { wch: 10 }
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Результаты");
+  XLSX.writeFile(wb, "results.xlsx");
+}
+
+async function clearResults() {
+  if (!confirm("Удалить ВСЕ результаты из базы данных?")) return;
+  await fbDelete("/medquiz_ash/results");
+  results = [];
+  renderResults();
+  updateSummary();
+}
+
+// ================================================================
+//  QUIZ FLOW
+// ================================================================
+function goQuiz() {
+  go("name-entry");
+  setTimeout(() => document.getElementById("name-inp").focus(), 100);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function startQuiz() {
+  const name = document.getElementById("name-inp").value.trim();
+  if (!name) { document.getElementById("name-inp").focus(); return; }
+  const remote = await fbGet("/medquiz_ash/settings");
+  if (remote) {
+    if (Number.isFinite(parseInt(remote.questionCount))) quizCount = Math.max(5, Math.min(100, parseInt(remote.questionCount)));
+    if (Number.isFinite(parseInt(remote.timePerQuestion))) timePerQuestion = Math.max(0, parseInt(remote.timePerQuestion));
+    updateSettingsDisplay();
+  }
+  await loadQuestions();
+  const count = Math.min(quizCount, questions.length);
+  const qIndices = shuffle(questions.map((_, i) => i)).slice(0, count);
+  quizState = { name, current:0, answers:{}, selected:null, confirmed:false, qIndices };
+  go("quiz");
+  renderQ();
+}
+
+function stopQuestionTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+}
+function showTimerValue(val) {
+  const wrap = document.getElementById("timer-wrap");
+  const el = document.getElementById("timer-val");
+  if (timePerQuestion === 0) {
+    wrap.style.opacity = "0.8";
+    el.textContent = "∞";
+    return;
+  }
+  wrap.style.opacity = "1";
+  el.textContent = String(val);
+}
+function startQuestionTimer() {
+  stopQuestionTimer();
+  if (timePerQuestion === 0 || quizState.confirmed) {
+    showTimerValue("∞");
+    return;
+  }
+  timeLeft = timePerQuestion;
+  showTimerValue(timeLeft);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    showTimerValue(Math.max(0, timeLeft));
+    if (timeLeft <= 0) {
+      stopQuestionTimer();
+      timeoutNextQuestion();
+    }
+  }, 1000);
+}
+function timeoutNextQuestion() {
+  if (quizState.confirmed) return;
+  if (quizState.selected !== null) {
+    quizState.answers[quizState.current] = quizState.selected;
+  }
+  if (quizState.current < quizState.qIndices.length - 1) {
+    quizState.current++;
+    quizState.selected = null;
+    quizState.confirmed = false;
+    renderQ();
+  } else {
+    finishQuiz();
+  }
+}
+
+function renderQ() {
+  const s = quizState;
+  const qi = s.qIndices[s.current];
+  const q = questions[qi];
+  const total = s.qIndices.length;
+  const progress = ((s.current + (s.confirmed ? 1 : 0)) / total) * 100;
+
+  document.getElementById("pfill").style.width = progress + "%";
+  document.getElementById("qc").textContent = s.current + 1;
+  document.getElementById("qt").textContent = total;
+  document.getElementById("qn").textContent = s.name;
+  document.getElementById("qtxt").textContent = q.text;
+
+  const letters = ["А","Б","В","Г","Д","Е"];
+  let html = "";
+  q.options.forEach((opt, i) => {
+    let cls = "opt";
+    if (s.confirmed) {
+      cls += " lock";
+      if (i === q.correct) cls += " ok";
+      else if (i === s.selected && i !== q.correct) cls += " no";
+    } else if (s.selected === i) cls += " sel";
+    let letTxt = letters[i];
+    if (s.confirmed && i === q.correct) letTxt = "✓";
+    if (s.confirmed && i === s.selected && i !== q.correct) letTxt = "✗";
+    html += `<button class="${cls}" onclick="selectOpt(${i})"><span class="olet">${letTxt}</span>${esc(opt)}</button>`;
+  });
+  document.getElementById("qopts").innerHTML = html;
+
+  const actEl = document.getElementById("qact");
+  if (!s.confirmed) {
+    actEl.innerHTML = `<button class="btn btn-p${s.selected===null?' btn-dis':''}" onclick="confirmAnswer()" ${s.selected===null?'disabled':''}>Подтвердить ответ</button>`;
+  } else if (s.current < total - 1) {
+    const isOk = s.selected === q.correct;
+    actEl.innerHTML = `<button class="btn ${isOk?'btn-g':'btn-y'}" onclick="nextQ()">${isOk?'Верно! ':'Неверно. '}Следующий →</button>`;
+  } else {
+    actEl.innerHTML = `<div style="text-align:center;padding:14px;color:var(--text3)">Сохранение...</div>`;
+    setTimeout(finishQuiz, 800);
+  }
+  startQuestionTimer();
+}
+
+function selectOpt(i) { if (quizState.confirmed) return; quizState.selected = i; renderQ(); }
+function confirmAnswer() {
+  if (quizState.selected === null) return;
+  stopQuestionTimer();
+  quizState.answers[quizState.current] = quizState.selected;
+  quizState.confirmed = true;
+  renderQ();
+}
+function nextQ() { stopQuestionTimer(); quizState.current++; quizState.selected = null; quizState.confirmed = false; renderQ(); }
+
+async function finishQuiz() {
+  stopQuestionTimer();
+  const s = quizState;
+  const total = s.qIndices.length;
+  const score = s.qIndices.reduce((sum, qi, pos) => sum + (s.answers[pos] === questions[qi].correct ? 1 : 0), 0);
+  const pct = Math.round((score / total) * 100);
+  const now = new Date();
+
+  const result = {
+    name: s.name,
+    score,
+    total,
+    pct,
+    time: now.toLocaleTimeString("ru-RU", { hour:"2-digit", minute:"2-digit" }),
+    ts: Date.now()
+  };
+
+  await fbPush("/medquiz_ash/results", result);
+
+  const emoji = pct >= 90 ? "🏆" : pct >= 70 ? "👏" : pct >= 50 ? "👍" : "📚";
+  const msg = pct >= 90 ? "Превосходно!" : pct >= 70 ? "Хороший результат!" : pct >= 50 ? "Неплохо!" : "Есть над чем работать";
+  const col = pct >= 70 ? "var(--green)" : pct >= 50 ? "var(--yellow)" : "var(--red)";
+
+  document.getElementById("fe").textContent = emoji;
+  document.getElementById("fm").textContent = msg;
+  document.getElementById("fn").textContent = s.name;
+  document.getElementById("fs").textContent = score + "/" + total;
+  document.getElementById("fs").style.color = col;
+  document.getElementById("fl").textContent = `правильных ответов (${pct}%)`;
+
+  go("finish");
+  document.getElementById("name-inp").value = "";
+}
+
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+</script>
+</body>
+</html>
